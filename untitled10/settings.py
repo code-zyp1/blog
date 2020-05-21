@@ -137,21 +137,23 @@ PAGINATION_SETTINGS = {
     'SHOW_FIRST_PAGE_WHEN_INVALID': True, # 当请求了不存在页，显示第一页
 }
 
-#
-# # 搜索设置
-# HAYSTACK_CONNECTIONS = {
-#     "default": {
-#         "ENGINE": "blog.elasticsearch2_ik_backend.Elasticsearch2IkSearchEngine",
-#         "URL": "",
-#         "INDEX_NAME": "hellodjango_blog_tutorial",
-#     },
-# }
-# HAYSTACK_SEARCH_RESULTS_PER_PAGE = 10
-#
-# enable = os.environ.get("ENABLE_HAYSTACK_REALTIME_SIGNAL_PROCESSOR", "yes")
-# if enable in {"true", "True", "yes"}:
-#     HAYSTACK_SIGNAL_PROCESSOR = "haystack.signals.RealtimeSignalProcessor"
-#
-# HAYSTACK_CUSTOM_HIGHLIGHTER = "blog.utils.Highlighter"
-# # HAYSTACK_DEFAULT_OPERATOR = 'AND'
-# # HAYSTACK_FUZZY_MIN_SIM = 0.1
+
+#heroku设置
+cwd=os.getcwd()#获取当前的工作目录
+#确保这个设置文件在本地和在线都能使用，只有部署到kuroku才会执行if
+if cwd=='/app' or cwd[:4]=='/tmp':
+    import dj_database_url
+    DATABASES={
+        'default': dj_database_url.config(default='postgres://localhost ')
+    }
+
+    SECURE_PROXY_SSL_HEADER=('HTTP_X_FORWARDED_PROTO','https')
+
+    ALLOWED_HOSTS=['*']#支持所有的主机头
+    #静态资产配置
+    BASE_DIR=os.path.dirname(os.path.abspath(__file__))
+    STATIC_ROOT='staticfiles'
+    STATIC_URL = '/static/'
+    STATICFILES_DIRS=(
+        os.path.join(BASE_DIR,'static'),
+    )
